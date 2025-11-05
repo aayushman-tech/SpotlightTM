@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotlight ✦</title>
+
+  <style>
+    * { box-sizing: border-box; transition: all 0.3s ease; }
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      padding: 0.8rem 0 0.2rem 0;
+      color: #ffd700;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      background-color: #1e1e1e;
+      border-bottom: 1px solid #333;
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
+
+    .nav-left { display: flex; gap: 0.8rem; }
+
+    .nav-left button {
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      color: #fff;
+      background-color: #333;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-left button.active {
+      background-color: #ffd700;
+      box-shadow: 0 0 10px #ffd700;
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    .theme-toggle {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #000;
+      background-color: #ffd700;
+      box-shadow: 0 0 10px #ffd700;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+      padding: 1rem;
+      margin-top: 120px;
+    }
+
+    section {
+      display: none;
+      max-width: 700px;
+      animation: fade 0.4s ease;
+    }
+
+    section.active { display: block; }
+
+    @keyframes fade { from {opacity: 0;} to {opacity: 1;} }
+
+    .creation {
+      background: #1e1e1e;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    textarea, input {
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 8px;
+      width: 90%;
+    }
+
+    #addPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 100;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    #addPopup button {
+      background: #ffd700;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* LIGHT MODE */
+    body.light {
+      background-color: #f5f5f5;
+      color: #000;
+    }
+
+    body.light header { color: #00c853; }
+
+    body.light nav {
+      background-color: #fff;
+      border-bottom: 1px solid #ccc;
+    }
+
+    body.light .nav-left button {
+      background-color: #eaeaea;
+      color: #000;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+
+    body.light .nav-left button.active {
+      background-color: #00ff66;
+      box-shadow: 0 0 10px #00ff66;
+      color: #000;
+    }
+
+    body.light .theme-toggle {
+      background-color: #00ff66;
+      box-shadow: 0 0 10px #00ff66;
+      color: #000;
+    }
+
+    body.light .creation {
+      background: #fff;
+      color: #000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    body.light textarea,
+    body.light input {
+      background: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+    }
+
+    body.light #addPopup {
+      background: #fff;
+      color: #000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body class="dark">
+  <header>Spotlight ✦</header>
+
+  <nav>
+    <div class="nav-left">
+      <button class="nav-btn active" data-page="home">Home</button>
+      <button class="nav-btn" data-page="comments">Comments</button>
+      <button class="nav-btn" data-page="settings">Settings</button>
+    </div>
+    <button class="theme-toggle" id="themeToggle">Dark Mode</button>
+  </nav>
+
+  <main>
+    <section id="home" class="active">
+      <h1>My Creations</h1>
+      <button id="addBtn">➕ Add Creation</button>
+      <div id="creationsList"></div>
+    </section>
+
+    <section id="comments">
+      <h1>Comments</h1>
+      <textarea id="commentText" placeholder="Write a comment..." style="width:100%;height:80px;"></textarea><br>
+      <button id="sendComment">Post Comment</button>
+      <div id="commentsList"></div>
+    </section>
+
+    <section id="settings">
+      <h1>Settings</h1>
+      <p>Public mode: Anyone can view. Only you can add (password protected).</p>
+    </section>
+  </main>
+
+  <div id="addPopup">
+    <input type="password" id="passInput" placeholder="Enter your password"><br><br>
+    <input type="text" id="titleInput" placeholder="Title"><br><br>
+    <textarea id="textInput" placeholder="Description"></textarea><br><br>
+    <button id="saveBtn">Save</button>
+  </div>
+
+  <script>
+    const BIN_ID = "6903462ad0ea881f40c6fddb";
+    const API_KEY = "$2a$10$VMQgSBizTxrUia3X8uWs5OxVlc/L.XE1UKTOUNePDTbRp87dwh0ly";
+    const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    // THEME SWITCH
+    const toggleBtn = document.getElementById("themeToggle");
+    function updateThemeText() {
+      toggleBtn.textContent = document.body.classList.contains("dark") ? "Dark Mode" : "Light Mode";
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      document.body.classList.toggle("light");
+      updateThemeText();
+    });
+
+    updateThemeText(); // initialize
+
+    // NAV
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const sections = document.querySelectorAll("section");
+    navButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        navButtons.forEach(b => b.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
+        button.classList.add("active");
+        document.getElementById(button.dataset.page).classList.add("active");
+      });
+    });
+
+    // ADD CREATION
+    const addBtn = document.getElementById("addBtn");
+    const popup = document.getElementById("addPopup");
+    const saveBtn = document.getElementById("saveBtn");
+    addBtn.onclick = () => popup.style.display = "block";
+
+    saveBtn.onclick = async () => {
+      const pass = document.getElementById("passInput").value.trim();
+      if (pass !== "1541") return alert("❌ Wrong password!");
+      const title = document.getElementById("titleInput").value.trim();
+      const text = document.getElementById("textInput").value.trim();
+      if (!title || !text) return alert("Please fill in title and description.");
+      const data = await fetch(BIN_URL, { headers: { "X-Master-Key": API_KEY } }).then(r=>r.json());
+      const record = data.record;
+      record.creations.push({ title, text });
+      await fetch(BIN_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+        body: JSON.stringify(record)
+      });
+      popup.style.display = "none";
+      loadCreations();
+      alert("✅ Creation added!");
+    };
+
+    async function loadCreations() {
+      const res = await fetch(BIN_URL, { headers: { "X-Master-Key": API_KEY } });
+      const data = await res.json();
+      const list = document.getElementById("creationsList");
+      list.innerHTML = "";
+      (data.record.creations || []).forEach(c => {
+        const div = document.createElement("div");
+        div.className = "creation";
+        div.innerHTML = `<h3>${c.title}</h3><p>${c.text}</p>`;
+        list.appendChild(div);
+      });
+    }
+
+    // COMMENTS
+    const sendBtn = document.getElementById("sendComment");
+    sendBtn.onclick = async () => {
+      const text = document.getElementById("commentText").value.trim();
+      if (!text) return alert("Type something!");
+      const data = await fetch(BIN_URL, { headers: { "X-Master-Key": API_KEY } }).then(r=>r.json());
+      const record = data.record;
+      record.comments.push(text);
+      await fetch(BIN_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+        body: JSON.stringify(record)
+      });
+      document.getElementById("commentText").value = "";
+      loadComments();
+    };
+
+    async function loadComments() {
+      const res = await fetch(BIN_URL, { headers: { "X-Master-Key": API_KEY } });
+      const data = await res.json();
+      const list = document.getElementById("commentsList");
+      list.innerHTML = "";
+      (data.record.comments || []).forEach(c => {
+        const div = document.createElement("div");
+        div.className = "creation";
+        div.innerHTML = `<p>${c}</p>`;
+        list.appendChild(div);
+      });
+    }
+
+    loadCreations();
+    loadComments();
+  </script>
+</body>
+</html>
